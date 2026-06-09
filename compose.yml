@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: claiim
+      POSTGRES_USER: claiim
+      POSTGRES_PASSWORD: claiim
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U claiim"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  claiim-api:
+    image: ghcr.io/nivaya/claiim-api:preview
+    environment:
+      DATABASE_URL: postgres://claiim:claiim@postgres:5432/claiim?sslmode=disable
+      TOKEN_SECRET: ${TOKEN_SECRET}
+      TIER: ${TIER:-community}
+      PORT: "8181"
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      CHRON_QUEUE_WORKERS: "4"
+    ports:
+      - "8181:8181"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  claiim-ui:
+    image: ghcr.io/nivaya/claiim-ui:preview
+    environment:
+      PORT: "3001"
+    ports:
+      - "3001:3001"
+    depends_on:
+      - claiim-api
+    restart: unless-stopped
+
+volumes:
+  pgdata:
