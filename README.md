@@ -22,9 +22,25 @@ CLAIIM is proprietary software. This repository does not contain source code. Ru
 
 ---
 
+## Image Access
+
+Runtime container images are gated during the controlled preview rollout. Before running `docker compose up -d`, you need pull credentials.
+
+**Request access:** email [hello@nivaya.io](mailto:hello@nivaya.io) or visit [claiim.io/contact](https://claiim.io/contact).
+
+You will receive a personal access token to authenticate against the container registry:
+
+```bash
+docker login ghcr.io -u YOUR_GITHUB_USERNAME --password YOUR_TOKEN
+```
+
+`docker compose up -d` will fail with an authentication error without this step.
+
+---
+
 ## Quick Start (Evaluation Preview)
 
-**Prerequisites:** Docker, Docker Compose v2.
+**Prerequisites:** Docker, Docker Compose v2, pull credentials (see above).
 
 ```bash
 git clone https://github.com/nivaya/claiim
